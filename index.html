@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html>
+<!-- Use the HTML and CSS you developed in module 01 to fill out this template.-->
+
+<head>
+  <meta charset=utf-8 />
+  <title>Round like a spheroid, not a pizza</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <link rel='icon' href='https://newmapsplus.github.io/favicon.ico' type='image/x-icon' />
+
+  <!-- Add links to external css stylesheets. -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://use.typekit.net/ewr7qyn.css">
+
+  <!-- Use the latest stable version @ leafletjs.com/download.html -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+  <!-- start frontloaded JavaScript -->
+  <!-- jQuery -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- end frontloaded JavaScript -->
+  <style>
+    /* Add custom styles. */
+    body {
+      font-family: 'work-sans', sans-serif;
+      font-weight: 400;
+      font-style: normal;
+      margin: 2;
+      padding: 3;
+      background: #fff6d0;
+      color: #000000;
+      font-size: 100%;
+    }
+
+    section {
+      width: 80%;
+      margin: 10px auto;
+    }
+
+    h1 {
+      font-family: 'geneo-std', sans-serif;
+      font-weight: 900;
+      font-style: bold;
+      font-size: 3em;
+      padding-left: 40px;
+      letter-spacing: .04em;
+      text-shadow: 3px 3px 3px #696969;
+      text-align: center;
+      margin: 10px auto;
+    }
+
+    h2 {
+      font-family: 'geneo-std', sans-serif;
+      font-weight: 700;
+      font-style: bold;
+      font-size: 2em;
+      letter-spacing: .04em;
+      text-shadow: 2px 2px 2px #696969;
+      text-align: center;
+      margin: .5em .5em .5em .5em;
+    }
+
+    h3 {
+      font-family: 'geneo-std', sans-serif;
+      font-weight: 700;
+      font-style: bold;
+      font-size: 1.5em;
+      letter-spacing: .04em;
+      text-align: left;
+      margin: .5em .5em .5em .5em;
+    }
+
+    p {
+      font-size: 1.3em;
+      line-height: 1.5em;
+      text-align: justify;
+    }
+
+    sup {
+      vertical-align: super;
+      font-size: smaller;
+    }
+
+    a {
+      color: #0041b9;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+      color: #018dff;
+    }
+
+    ul {
+      padding: 0px 25px 9px 30px;
+      line-height: 1.6em;
+    }
+
+    li {
+      margin: 6px 0
+    }
+
+    hr {
+      margin: 20px 0;
+      border: 0;
+      height: 1px;
+      background: #979797;
+    }
+
+    table,
+    th,
+    td {
+      border: none;
+    }
+
+    table.center {
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .marginauto {
+      margin: 10px auto 20px;
+      display: block;
+    }
+
+    .caption {
+      margin: 0 0 20px 0;
+      display: block;
+      text-shadow: 1px 1px 1px #696969;
+    }
+
+    #map {
+      width: 100%;
+      height: 70vh;
+      margin: 10px auto;
+      border: 1px solid #000000;
+      border-radius: 100%;
+      filter: drop-shadow(0.35rem 0.35rem 0.4rem #696969);
+    }
+
+    .highlight {
+      color: #a00c0a;
+      font-weight: bold;
+    }
+
+    img {
+      filter: drop-shadow(0.35rem 0.35rem 0.4rem #696969);
+    }
+
+    .round-pic {
+      border-radius: 100%;
+    }
+
+    .leaflet-popup-content img {
+      border-radius: 0%;
+      width: 100%;
+      margin-top: 0.8rem;
+    }
+
+    .img-fill {
+      width: 100%;
+      height: auto;
+      margin: 10px 0;
+    }
+
+    .img-tn {
+      height: 100%;
+      width: 100%;
+      margin: 10px 0;
+    }
+
+    .img-border {
+      border: 1px solid #000000;
+    }
+
+    .svg-title {
+      float: none;
+      vertical-align: text-top;
+      width: 80px;
+      margin: 4px 10px -8px 0;
+    }
+
+    .svg-bullet {
+      float: none;
+      display: inline;
+      width: 18px;
+      margin: 0px 7px 0px 2px;
+    }
+
+    #gallery img {
+      opacity: 0.8;
+      cursor: pointer;
+      height: auto;
+    }
+
+    #gallery img:hover {
+      opacity: 1
+    }
+
+    #gallery {
+      text-align: center
+    }
+
+    #gallery td {
+      vertical-align: middle;
+      width: 14%;
+      max-height: 130px;
+      padding: 1%;
+    }
+
+    #no-table {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #no-table img {
+      width: 12%;
+      height: auto;
+      padding: 1%;
+      float: left;
+      box-sizing: border-box;
+    }
+
+    /* Use float property to make two-column layout */
+    .first-column {
+      float: left;
+      width: 49%;
+      padding-right: 2%;
+    }
+
+    .second-column {
+      float: left;
+      width: 49%;
+    }
+
+    /* Clear floats after columns */
+    .row::after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+
+    @media screen and (max-width: 900px) {
+
+      .first-column,
+      .second-column {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <!-- Add header information -->
+    <h1>Highlights from Antiquity</h1>
+  </header>
+  <section>
+    <!-- Add map and body content -->
+    <div id="map"></div>
+
+    <!-- Start row -->
+    <div class="row">
+
+      <!-- Start left column -->
+      <div class="first-column">
+        <h2>Mapping in Ancient Greece</h2>
+
+        <p>The Ancient Greeks knew that the Earth was round (like an <a
+            href="https://gisgeography.com/ellipsoid-oblate-spheroid-earth/">oblate spheroid</a>, not <a
+            href="https://www.tfes.org/">round like a pizza</a>). Greek mathematician Pythagoras reasoned that since the
+          Moon was observed to be round, it stood to reason that the Earth was also round. Another famous Greek
+          mathematician and philosopher, Aristotle also made the case for a spherical Earth. Not only that, a fairly
+          accurate estimate of the Earth's circumference was determined by a Greek mathematician named Eratosthenes
+          a couple of hundred years later using a clever method of timing, distance, and measuring angles of shadows.
+        </p>
+        <p>
+          Eratosthenes learned that at noon on the summer solstice, no vertical shadows were cast in the City of Syene
+          (located at 24°05′20″N 32°53′59″E, which is slightly north of the Tropic of Cancer). From his vantage point in
+          Alexandria (located at 31°12′N 29°55′E), he measured the shadow cast at noon on the summer solstice was 7° of
+          arc. He reasoned that on a 360° sphere, this meant that Alexandria and Syene were 7° apart. Eratosthenes hired
+          a man to pace the distance between the two cities to which measured 5,000 stadia apart (or approximately 800
+          kilometres).
+        </p>
+        <p>
+          Using these numbers, Eratosthenes calculated the Earth's circumference using 7.2° of arc, which was 1:50 of
+          360°. By multiplying 50 by 800 kilometres yields the result of 40,000 kilometres. Fast forward over 2,200
+          years to the Space Age, satellite data has provided us with 40,030 kilometres for the measurement for the
+          circumference of the Earth. Eratosthenes was only 30 kilometres off, which ain't bad for a smart Greek dude
+          with a
+          stick (and that man with the tough feet whom he hired to pace the distance!).
+        </p>
+        <p>
+          Despite over 2500 years of empirical science providing evidence for a spherical Earth, there appears to be a
+          <a
+            href="https://www.theguardian.com/science/video/2019/feb/05/flat-earth-rising-meet-the-people-casting-aside-2500-years-of-science-video">resurgence
+            in Flat Earth Theory proponents</a> in modern times. There are many possible reasons for this—the reasons
+          being only useful to know if you're wanting to put the effort into changing these people's minds on the
+          subject. Otherwise, situational awareness is more than good enough.
+        </p>
+
+        <!-- End first column -->
+      </div>
+
+      <!-- Start right column -->
+      <div class="second-column">
+        <h2>Some archeological photos</h2>
+        <div id="photo">
+          <div style="text-align:center" id="caption"></div>
+        </div>
+        <div id="gallery">
+          <table>
+            <tr>
+              <td><img src="photos/AdobeStock_61628541_alexandria_1080px.jpg"
+                  alt="Ancient Sphinx Statue and Pompey's Pillar - Alexandria, Egypt." class="img-tn img-border round-pic"></td>
+              <td><img src="photos/AdobeStock_217790522_syene_1080px.jpg"
+                  alt="The Front of the Abu Simbel Temple - Aswan (Syene), Egypt." class="img-tn img-border round-pic"></td>
+              <td><img src="photos/AdobeStock_108469909_corinth_1080px.jpg" alt="Apollo temple ruins - Corinth, Greece."
+                  class="img-tn img-border round-pic">
+              </td>
+              <td><img src="photos/AdobeStock_170838668_parthenon_1080.jpg"
+                  alt="Parthenon on the Acropolis - Athens, Greece." class="img-tn img-border round-pic">
+              </td>
+              <td><img src="photos/AdobeStock_236666136_delphi_1080px.jpg"
+                  alt="Temple of Athena Pronaia - Delphi, Greece." class="img-tn img-border round-pic"></td>
+              <td><img src="photos/AdobeStock_292154520_sparta_1080px.jpg"
+                  alt="The Ancient Sparta archaeological site - Sparta, Greece." class="img-tn img-border round-pic"></td>
+              <td><img src="photos/CreativeCommons_Thebes.jpg"
+                  alt="Remains of the Cadmea, the central fortress of ancient Thebes - Thebes, Greece"
+                  class="img-tn img-border round-pic"></td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <!-- End right column -->
+    </div>
+
+    <!-- End row column -->
+    </div>
+
+
+  </section>
+  <!-- START OF FOOTER SECTION -->
+  <footer>
+    <div class="first-column">
+      <h3 style="padding-inline: 5%;">Project Notes:</h3>
+      <ul style="padding-inline: 10%;">
+        <li>This webpage was built to meet requirements for Module 2 of the <a
+            href="https://newmapsplus.github.io/map672/syllabus/">MAP 672: Programming For Web Mapping</a> course at the
+          <a href="https://newmapsplus.as.uky.edu/">University of Kentucky</a>.
+        </li>
+      </ul>
+      <!-- Be cautious of inlining styles. These will overwrite upstream CSS styles. -->
+      <h3 style="padding-inline: 5%;">Tools, citations, and methodology used in this project:</h3>
+      <ul style="padding-inline: 10%;">
+
+        <li>All software tools used in this project were ran on the <a
+            href="https://freebsdfoundation.org/freebsd-project/what-is-freebsd/">FreeBSD 13-RELEASE</a> Operating
+          System.
+        </li>
+        <!--
+           <li><a href="https://www.qgis.org/en/site/forusers/alldownloads.html#freebsd">QGIS 3.22.3-Białowieża</a> was used to build the static maps.</li> 
+        -->
+        <li><a href="https://github.com/microsoft/vscodeVisual">Visual Studio Code - Open Source ("Code - OSS")
+            1.63.2</a> was used for all coding with the following plugins installed: <a
+            href="https://beautifier.io/">Beautify</a>, <a href="https://github.com/mhutchie/vscode-git-graph">Git
+            Graph</a>, <a href="https://github.com/felipecaputo/git-project-manager">Git Project Manager</a>, <a
+            href="https://github.com/github/gitignore">gitignore</a>, <a
+            href="https://github.com/gitkraken/vscode-gitlens">GitLens — Git supercharged</a>, and <a
+            href="https://github.com/ritwickdey/vscode-live-server">Live Server</a>.
+        <li>We had to bring out the <a href="https://www.gimp.org/">GNU Image Manipulator (GIMP) 2.10.30</a> for raster
+          image editing.</li>
+        <li><a href="https://inkscape.org/release/inkscape-1.1.1/">Inkscape 1.1.1</a> was used for vector image editing.
+          AdobeStock_229275621.svg was used for map icon on the Leaflet interactive map.
+        </li>
+        <li>Code from <a href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css">Leaflet 1.7.1</a> using the <a
+            href="https://stamen.com/">map tiles by Stamen Design</a> for the base of the interactive webmap.
+        </li>
+        <li>Code from <a href="http://code.jquery.com/">jQuery 3.6.0</a> is front loaded to enable effects in Leaflet.
+        </li>
+        <li>All photographs on this page are either available under a <a href="https://creativecommons.org/">Creative
+            Commons</a> license or <a href="https://stock.adobe.com/">Adobe Stock
+            Photo</a> collection and are royalty free through <a
+            href="https://stock.adobe.com/enterprise-conditions#extendedLicenses">Adobe's extended license</a> and made
+          accessible through the <a href="https://www.uky.edu/">University of Kentucky</a>. These photos were scaled
+          down to conserve bandwidth and their original filenames were preserved for easy referencing to their
+          respective high-resolution source.</li>
+        <li>Data accessed 29 January 2022.</li>
+      </ul>
+    </div>
+
+    <div class="second-column">
+      <h3 style="text-align: center;">About the author:</h3>
+      <table class="center">
+        <tr>
+          <th><img src="photos/profile_pic_bw.png" class="round-pic"></th>
+        </tr>
+        <tr>
+
+          <td style="padding-right: 17%; padding-left: 17%; text-align: justify;">An artist,
+            scientist, bibliophile, and autodidact at heart, Sirius enjoys applying these facets
+            in his role of dad and husband first and foremost. He also finds happiness with spending time with Shin'yū
+            the Maltipoo (Shin'yū or 親友 is the Japanese term for "best friend"). Sirius also enjoys calligraphy,
+            metacognition, philosophy, and the pursuit of arcane knowledge regardless of the path it puts him on. He
+            generally prefers Open Source Software solutions such as FreeBSD for daily computing, QGIS for cartography
+            and geospatial analysis, GIMP and Inkscape for image manipulation. However, he is no stranger to proprietary
+            solutions such as ArcGIS Pro, Adobe Photoshop and Illustrator.
+          </td>
+        <tr>
+          <td style="text-align: center;"><br>Connect with <a
+              href="https://www.linkedin.com/in/siriusbontea/">@SiriusBontea</a> on LinkedIn:</td>
+        </tr>
+        <tr>
+          <td style="text-align: center; padding-bottom: 10%;"><a href="https://www.linkedin.com/in/siriusbontea/"><img
+                src="images/SiriusBonteaLinkedInQRcode150px.png" alt="Sirius T. Bontea @ LinkedIn" ></a></td>
+        </tr>
+
+        </tr>
+      </table>
+    </div>
+    <!-- Start of UKy items-->
+    <div class="row::after">
+      <div>
+        <a href="https://newmapsplus.github.io">
+          <img src="https://newmapsplus.github.io/assets/graphics/logo-2018-nmp-75px-h-gray.png"
+            alt="University of Kentucky New Maps Plus" class="marginauto">
+        </a>
+
+        <a href="https://uky-gis.github.io">
+          <img src="https://newmapsplus.github.io/assets/graphics/logo-2018-geography-75px-h.png"
+            alt="University of Kentucky Department of Geography" class="marginauto">
+        </a>
+      </div>
+    </div>
+  </footer>
+  <!-- END OF FOOTER SECTION -->
+
+  <!-- START OF JAVA SCRIPT CODE -->
+  <!-- Add link to Leaflet JavaScript library. -->
+  <!-- Use the latest stable version @ leafletjs.com/download.html -->
+  <!-- Start of External JS sources -->
+
+  <!-- Leaflet -->
+  <script type="text/javascript" src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+  <!-- End of External JS sources -->
+
+  <!-- Start of Leaflet code -->
+  <script>
+    // Map options control initial location and zoom level.
+    var options = {
+      center: [31, 23],
+      zoom: 4.5
+    }
+
+    // Create Leaflet map with above options.
+    var map = L.map('map', options);
+
+    // Get basemap URL from Leaflet Providers
+    var basemap_url = 'http://stamen-tiles-{s}.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.{ext}'
+
+    // Get basemap attributes from Leaflet Providers
+    var basemap_attributes = {
+      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains: 'abcd',
+      minZoom: 1,
+      maxZoom: 16,
+      ext: 'png'
+    }
+
+    // Add tileset as a layer in our map. 
+    var tiles = L.tileLayer(basemap_url, basemap_attributes).addTo(map);
+
+    // ************************************************** //
+    // Using custom marker Leaflet locations
+    var temple = L.icon({
+      iconUrl: 'images/AdobeStock_229275621.svg',
+      iconSize: [30, 60], // size of the icon
+      iconAnchor: [10, 40], // point of the icon which will correspond to marker's location
+      popupAnchor: [5, -50] // point from which the popup should open relative to the iconAnchor
+    });
+
+    var greek_man = L.icon({
+      iconUrl: 'images/AdobeStock_368421712_greek_man.svg',
+      iconSize: [30, 60], // size of the icon
+      iconAnchor: [10, 40], // point of the icon which will correspond to marker's location
+      popupAnchor: [5, -50] // point from which the popup should open relative to the iconAnchor
+    });
+
+    var greek_man2 = L.icon({
+      iconUrl: 'images/AdobeStock_368421493_greek_man2.svg',
+      iconSize: [30, 60], // size of the icon
+      iconAnchor: [10, 40], // point of the icon which will correspond to marker's location
+      popupAnchor: [5, -50] // point from which the popup should open relative to the iconAnchor
+    });
+
+    // STORING DATA AS VARIABLES IN ARRAYS
+
+    // variables referencing data values
+    var city0Name = "Athens",
+      city0Coords = [37.9715285, 23.7245279],
+      city0Pop = 3753783,
+      city0Capital = true,
+      city0State = "Greece",
+      city0Image = "<br><img src='photos/AdobeStock_170838668_parthenon_120px.jpg'>",
+      city0Tooltip = "City of Athens";
+
+    var city1Name = "Sparta",
+      city1Coords = [37.0948593, 22.2971024],
+      city1Pop = 35259,
+      city1Capital = false,
+      city1State = "Greece",
+      city1Image = "<br><img src='photos/AdobeStock_292154520_sparta_120px.jpg'>",
+      city1Tooltip = "City of Sparta";
+
+    var city2Name = "Corinth",
+      city2Coords = [37.9329155, 22.919883],
+      city2Pop = 58192,
+      city2Capital = false,
+      city2State = "Greece",
+      city2Image = "<br><img src='photos/AdobeStock_108469909_corinth_120px.jpg'>",
+      city2Tooltip = "City of Corinth";
+
+    var city3Name = "Thebes",
+      city3Coords = [38.3228222, 23.3173531],
+      city3Pop = 36477,
+      city3Capital = false,
+      city3State = "Greece",
+      city3Image = "<br><img src='photos/CreativeCommons_Thebes_120px.jpg'>",
+      city3Tooltip = "City of Thebes";
+
+    var city4Name = "Delphi",
+      city4Coords = [38.4802443, 22.4925005],
+      city4Pop = 26716,
+      city4Capital = false,
+      city4State = "Greece",
+      city4Image = "<br><img src='photos/AdobeStock_236666136_delphi_120px.jpg'>",
+      city4Tooltip = "City of Delphi";
+
+    var city5Name = "Alexandria",
+      city5Coords = [31.2008069, 29.9170985],
+      city5Pop = 5381000,
+      city5Capital = false,
+      city5State = "Egypt",
+      city5Image = "<br><img src='photos/AdobeStock_61628541_alexandria_120px.jpg'>",
+      city5Tooltip = "City of Alexandria<br><i>Eratosthenes measured shadows to be 7 arc degrees on the summer solstice</i>";
+
+    var city6Name = "Syene",
+      city6Coords = [24.0890115, 32.8996891],
+      city6Pop = 351332,
+      city6Capital = false,
+      city6State = "Egypt",
+      city6Image = "<br><img src='photos/AdobeStock_217790522_syene_120px.jpg'>",
+      city6Tooltip = "City of Syene<br><i>Eratosthenes hired a man to pace the distance from Alexandria to this city.</i>";
+
+    // arrays of data
+    var cities = [city0Name, city1Name, city2Name, city3Name, city4Name, city5Name, city6Name],
+      coords = [city0Coords, city1Coords, city2Coords, city3Coords, city4Coords, city5Coords, city6Coords],
+      populations = [city0Pop, city1Pop, city2Pop, city3Pop, city4Pop, city5Pop, city6Pop],
+      capitals = [city0Capital, city1Capital, city2Capital, city3Capital, city4Capital, city5Capital, city6Capital],
+      states = [city0State, city1State, city2State, city3State, city4State, city5State, city6State];
+
+    // ADDING FIRST MARKER TO MAP
+
+    // creating a string of the Popup content
+    var city0Popup = `<b>${cities[0]}</b><br>
+                      <b>population</b>: ${populations[0]}`;
+
+    // if city is a capital city
+    if (capitals[0] == true) {
+      // concatenate a string to the existing string value
+      city0Popup += `<br>Capital of ${states[0]}`;
+    }
+
+    // create the Leaflet marker using the coordinates
+    L.marker(coords[0], { icon: temple })
+      .addTo(map) // add it to the map
+      .bindPopup(city0Popup + city0Image) // bind the Popup
+      .bindTooltip(city0Tooltip);
+
+    // ADDING SECOND MARKER TO MAP
+    var city1Popup = `<b>${cities[1]}</b><br>
+                      <b>population</b>: ${populations[1]}`;
+    if (capitals[1] == true) {
+      city1Popup += `<br>Capital of ${states[1]}`;
+    }
+    L.marker(coords[1], { icon: temple })
+      .addTo(map)
+      .bindPopup(city1Popup + city1Image)
+      .bindTooltip(city1Tooltip);
+    // ADDING THIRD MARKER TO MAP
+    var city2Popup = `<b>${cities[2]}</b><br>
+                      <b>population</b>: ${populations[2]}`;
+    if (capitals[2] == true) {
+      city2Popup += `<br>Capital of ${states[2]}`;
+    }
+    L.marker(coords[2], { icon: temple })
+      .addTo(map)
+      .bindPopup(city2Popup + city2Image)
+      .bindTooltip(city2Tooltip);
+
+    // ADDING FOURTH MARKER TO MAP
+    var city3Popup = `<b>${cities[3]}</b><br>
+                      <b>population</b>: ${populations[3]}`;
+    if (capitals[3] == true) {
+      city3Popup += `<br>Capital of ${states[3]}`;
+    }
+    L.marker(coords[3], { icon: temple })
+      .addTo(map)
+      .bindPopup(city3Popup + city3Image)
+      .bindTooltip(city3Tooltip);
+
+    // ADDING FIFTH MARKER TO MAP
+    var city4Popup = `<b>${cities[4]}</b><br>
+                      <b>population</b>: ${populations[4]}`;
+    if (capitals[4] == true) {
+      city4Popup += `<br>Capital of ${states[4]}`;
+    }
+    L.marker(coords[4], { icon: temple })
+      .addTo(map)
+      .bindPopup(city4Popup + city4Image)
+      .bindTooltip(city4Tooltip);
+
+    // ADDING SIXTH MARKER TO MAP
+    var city5Popup = `<b>${cities[5]}</b><br>
+                      <b>population</b>: ${populations[5]}`;
+    if (capitals[5] == true) {
+      city5Popup += `<br>Capital of ${states[5]}`;
+    }
+    L.marker(coords[5], { icon: greek_man })
+      .addTo(map)
+      .bindPopup(city5Popup + city5Image)
+      .bindTooltip(city5Tooltip);
+
+    // ADDING SEVENTH MARKER TO MAP
+    var city6Popup = `<b>${cities[6]}</b><br>
+                      <b>population</b>: ${populations[6]}`;
+    if (capitals[6] == true) {
+      city6Popup += `<br>Capital of ${states[6]}`;
+    }
+    L.marker(coords[6], { icon: greek_man2 })
+      .addTo(map)
+      .bindPopup(city6Popup + city6Image)
+      .bindTooltip(city6Tooltip);
+  </script>
+  <!-- Start of gallery script - images change with caption on click-->
+  <script>
+    $('#gallery img').click(function (evt) {
+      var elem = $(this);
+      var oldImage = $('#photo img');
+      $('#photo').prepend($('<img src=" ' + elem.attr('src') + ' " class="img-fill img-border round-pic" >').hide().fadeIn(
+        0));
+      $("#caption").html(elem.attr('alt'));
+      oldImage.fadeOut(0, function () {
+        $(this).remove();
+        $("#caption").html(elem.attr('alt')); // set the caption
+      });
+    });
+
+    $('#gallery img:first').trigger('click');
+  </script>
+
+  <!-- End of gallery script -->
+</body>
+
+</html>
